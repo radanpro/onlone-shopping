@@ -5,6 +5,7 @@ checkAdmin();
 
 $user_count = $pdo->query("SELECT COUNT(*) FROM users")->fetchColumn();
 $product_count = $pdo->query("SELECT COUNT(*) FROM products")->fetchColumn();
+$category_count = $pdo->query("SELECT COUNT(*) FROM categories")->fetchColumn();
 $order_count = $pdo->query("SELECT COUNT(*) FROM orders")->fetchColumn();
 
 include '../includes/header.php';
@@ -71,7 +72,7 @@ include '../includes/header.php';
             </div>
         </div>
     </div>
-    <!-- CAtegory Stat Card -->
+    <!-- Category Stat Card -->
     <div class="col-md-4">
         <div class="card stat-card h-100 shadow-sm border-0"
             style="background: linear-gradient(45deg, #1cc88a 0%, #13855c 100%);">

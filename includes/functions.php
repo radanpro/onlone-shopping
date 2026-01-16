@@ -1,30 +1,35 @@
 <?php
-function sanitize($data) {
+function sanitize($data)
+{
     return htmlspecialchars(stripslashes(trim($data)));
 }
 
-function redirect($url) {
+function redirect($url)
+{
     header("Location: " . $url);
     exit();
 }
 
-function isLoggedIn() {
+function isLoggedIn()
+{
     return isset($_SESSION['user_id']);
 }
 
-function isAdmin() {
+function isAdmin()
+{
     return isset($_SESSION['user_type']) && $_SESSION['user_type'] === 'admin';
 }
 
-function checkAuth() {
+function checkAuth()
+{
     if (!isLoggedIn()) {
         redirect('login.php');
     }
 }
 
-function checkAdmin() {
+function checkAdmin()
+{
     if (!isAdmin()) {
         redirect('../index.php');
     }
 }
-?>
