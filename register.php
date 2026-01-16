@@ -15,7 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $password = $_POST['password'];
     $gender = $_POST['gender'];
     $birth_date = $_POST['birth_date'];
-    
+
     if (empty($name) || empty($email) || empty($password)) {
         $error = "All fields are required.";
     } else {
@@ -26,7 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         } else {
             $hashed_password = password_hash($password, PASSWORD_DEFAULT);
             $image = 'default.png';
-            
+
             if (isset($_FILES['image']) && $_FILES['image']['error'] == 0) {
                 $allowed = ['jpg', 'jpeg', 'png', 'gif'];
                 $filename = $_FILES['image']['name'];
@@ -37,9 +37,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     $image = $new_name;
                 }
             }
-            
-            $stmt = $pdo->prepare("INSERT INTO users (name, email, password, gender, image, birth_date) VALUES (?, ?, ?, ?, ?, ?)");
-            if ($stmt->execute([$name, $email, $hashed_password, $gender, $image, $birth_date])) {
+
+            $stmt = $pdo->prepare("INSERT INTO users (name, email, password, gender, image, birth_date, status) VALUES (?, ?, ?, ?, ?, ?, ?)");
+            if ($stmt->execute([$name, $email, $hashed_password, $gender, $image, $birth_date, '1'])) {
                 $success = "Account created successfully. Please login.";
             } else {
                 $error = "Something went wrong.";
@@ -67,6 +67,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
             padding: 2rem 0;
         }
+
         .auth-card {
             width: 100%;
             max-width: 500px;
@@ -87,7 +88,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         </a>
                         <p class="text-muted">Create your account and start shopping!</p>
                     </div>
-                    
+
                     <?php if ($error): ?>
                         <div class="alert alert-danger alert-dismissible fade show" role="alert">
                             <i class="fas fa-exclamation-circle me-2"></i><?php echo htmlspecialchars($error); ?>
@@ -107,22 +108,28 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                             <div class="col-md-12 mb-3">
                                 <label class="form-label fw-semibold">Full Name</label>
                                 <div class="input-group">
-                                    <span class="input-group-text bg-light border-end-0"><i class="fas fa-user text-muted"></i></span>
-                                    <input type="text" name="name" class="form-control border-start-0 ps-0" placeholder="John Doe" required>
+                                    <span class="input-group-text bg-light border-end-0"><i
+                                            class="fas fa-user text-muted"></i></span>
+                                    <input type="text" name="name" class="form-control border-start-0 ps-0"
+                                        placeholder="John Doe" required>
                                 </div>
                             </div>
                             <div class="col-md-12 mb-3">
                                 <label class="form-label fw-semibold">Email Address</label>
                                 <div class="input-group">
-                                    <span class="input-group-text bg-light border-end-0"><i class="fas fa-envelope text-muted"></i></span>
-                                    <input type="email" name="email" class="form-control border-start-0 ps-0" placeholder="name@example.com" required>
+                                    <span class="input-group-text bg-light border-end-0"><i
+                                            class="fas fa-envelope text-muted"></i></span>
+                                    <input type="email" name="email" class="form-control border-start-0 ps-0"
+                                        placeholder="name@example.com" required>
                                 </div>
                             </div>
                             <div class="col-md-12 mb-3">
                                 <label class="form-label fw-semibold">Password</label>
                                 <div class="input-group">
-                                    <span class="input-group-text bg-light border-end-0"><i class="fas fa-lock text-muted"></i></span>
-                                    <input type="password" name="password" class="form-control border-start-0 ps-0" placeholder="Create a password" required>
+                                    <span class="input-group-text bg-light border-end-0"><i
+                                            class="fas fa-lock text-muted"></i></span>
+                                    <input type="password" name="password" class="form-control border-start-0 ps-0"
+                                        placeholder="Create a password" required>
                                 </div>
                             </div>
                             <div class="col-md-6 mb-3">
@@ -145,9 +152,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                             <i class="fas fa-user-plus me-2"></i>Create Account
                         </button>
                     </form>
-                    
+
                     <div class="text-center">
-                        <p class="mb-0 text-muted">Already have an account? <a href="login.php" class="text-primary fw-bold text-decoration-none">Login here</a></p>
+                        <p class="mb-0 text-muted">Already have an account? <a href="login.php"
+                                class="text-primary fw-bold text-decoration-none">Login here</a></p>
                     </div>
                 </div>
             </div>

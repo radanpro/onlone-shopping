@@ -97,7 +97,11 @@ include '../includes/header.php';
                                     <?php foreach ($orders as $order): ?>
                                         <tr>
                                             <td class="ps-4">
-                                                <span class="fw-bold text-primary small">#<?php echo $order['id']; ?></span>
+                                                <a href="order_details.php?id=<?php echo $order['id']; ?>"
+                                                    class="text-decoration-none">
+                                                    <span class="fw-bold text-primary small">#<?php echo $order['id']; ?></span>
+                                                    <i class="fas fa-external-link-alt ms-1 small" style="font-size: 10px;"></i>
+                                                </a>
                                             </td>
                                             <td>
                                                 <div class="d-flex align-items-center">
