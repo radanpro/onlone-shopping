@@ -75,7 +75,7 @@ include '../includes/header.php';
     <!-- Category Stat Card -->
     <div class="col-md-4">
         <div class="card stat-card h-100 shadow-sm border-0"
-            style="background: linear-gradient(45deg, #1cc88a 0%, #13855c 100%);">
+            style="background: linear-gradient(45deg, #1CC8BA 0%, #1CC8BA 100%);">
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
