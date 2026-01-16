@@ -26,24 +26,37 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item"><a class="nav-link" href="<?php echo $base_path; ?>index.php">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="<?php echo $base_path; ?>user/my_orders.php">My
+                            Orders / Cart</a></li>
+                    <li class="nav-item"><a class="nav-link" href="<?php echo $base_path; ?>user/wishlist.php">My
+                            Wishlist</a></li>
+
                 </ul>
                 <ul class="navbar-nav align-items-center">
                     <?php if (isset($_SESSION['user_id'])): ?>
                         <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="fas fa-user-circle me-1"></i> <?php echo htmlspecialchars($_SESSION['user_name']); ?>
+                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
+                                data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-user-circle me-1"></i>
+                                <?php echo htmlspecialchars($_SESSION['user_name']); ?>
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end shadow border-0" aria-labelledby="userDropdown">
-                                <li><a class="dropdown-item" href="<?php echo $base_path; ?>user/profile.php"><i class="fas fa-id-card me-2"></i>Profile</a></li>
+                                <li><a class="dropdown-item" href="<?php echo $base_path; ?>user/profile.php"><i
+                                            class="fas fa-id-card me-2"></i>Profile</a></li>
                                 <?php if ($_SESSION['user_type'] == 'admin'): ?>
-                                    <li><a class="dropdown-item" href="<?php echo $base_path; ?>admin/dashboard.php"><i class="fas fa-tachometer-alt me-2"></i>Admin Panel</a></li>
+                                    <li><a class="dropdown-item" href="<?php echo $base_path; ?>admin/dashboard.php"><i
+                                                class="fas fa-tachometer-alt me-2"></i>Admin Panel</a></li>
                                 <?php endif; ?>
-                                <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item text-danger" href="<?php echo $base_path; ?>logout.php"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
+                                <li><a class="dropdown-item text-danger" href="<?php echo $base_path; ?>logout.php"><i
+                                            class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
                             </ul>
                         </li>
                     <?php else: ?>
-                        <li class="nav-item"><a class="nav-link" href="<?php echo $base_path; ?>login.php">Login</a></li>
+                        <li class="nav-item"><a class="nav-link" href="<?php echo $base_path; ?>login.php">Login</a>
+                        </li>
                         <li class="nav-item ms-lg-2">
                             <a class="btn btn-primary btn-sm px-4" href="<?php echo $base_path; ?>register.php">Register</a>
                         </li>
