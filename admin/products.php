@@ -22,6 +22,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $name = sanitize($_POST['name']);
     $price = $_POST['price'];
     $description = sanitize($_POST['description']);
+    // --- إضافة حقل الكمية هنا ---
+    $stock = filter_var($_POST['stock'], FILTER_SANITIZE_NUMBER_INT);
     $id = isset($_POST['id']) ? $_POST['id'] : null;
 
     $image = 'product-default.png';
@@ -39,12 +41,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 
     if ($id) {
-        $stmt = $pdo->prepare("UPDATE products SET name = ?, price = ?, description = ?, image = ? WHERE id = ?");
-        $stmt->execute([$name, $price, $description, $image, $id]);
+        // --- تحديث استعلام UPDATE ليشمل stock ---
+        $stmt = $pdo->prepare("UPDATE products SET name = ?, price = ?, description = ?, image = ?, stock = ? WHERE id = ?");
+        $stmt->execute([$name, $price, $description, $image, $stock, $id]);
         $success = "Product updated.";
     } else {
-        $stmt = $pdo->prepare("INSERT INTO products (name, price, description, image) VALUES (?, ?, ?, ?)");
-        $stmt->execute([$name, $price, $description, $image]);
+        // --- تحديث استعلام INSERT ليشمل stock ---
+        $stmt = $pdo->prepare("INSERT INTO products (name, price, description, image, stock) VALUES (?, ?, ?, ?, ?)");
+        $stmt->execute([$name, $price, $description, $image, $stock]);
         $success = "Product added.";
     }
 }
@@ -68,6 +72,10 @@ include '../includes/header.php';
                 <input type="number" step="0.01" name="price" id="prod_price" class="form-control" required>
             </div>
             <div class="mb-3">
+                <label>Stock (Quantity)</label>
+                <input type="number" name="stock" id="prod_stock" class="form-control" required min="0">
+            </div>
+            <div class="mb-3">
                 <label>Description</label>
                 <textarea name="description" id="prod_desc" class="form-control"></textarea>
             </div>
@@ -87,6 +95,7 @@ include '../includes/header.php';
                     <th>Image</th>
                     <th>Name</th>
                     <th>Price</th>
+                    <th>Stock</th>
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -97,6 +106,7 @@ include '../includes/header.php';
                                 class="img-thumbnail"></td>
                         <td><?php echo htmlspecialchars($p['name']); ?></td>
                         <td>$<?php echo htmlspecialchars($p['price']); ?></td>
+                        <td><?php echo htmlspecialchars($p['stock']); ?></td>
                         <td>
                             <button class="btn btn-sm btn-info"
                                 onclick='editProduct(<?php echo json_encode($p); ?>)'>Edit</button>
@@ -116,6 +126,7 @@ include '../includes/header.php';
         document.getElementById('prod_name').value = p.name;
         document.getElementById('prod_price').value = p.price;
         document.getElementById('prod_desc').value = p.description;
+        document.getElementById('prod_stock').value = p.stock;
     }
 </script>
 
