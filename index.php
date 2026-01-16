@@ -5,7 +5,9 @@ include 'includes/header.php';
 
 $userId = isLoggedIn() ? $_SESSION['user_id'] : 0;
 
-$catStmt = $pdo->query("SELECT * FROM categories");
+// التعديل هنا: جلب فقط الفئات التي تحتوي على منتجات
+$catStmt = $pdo->query("SELECT DISTINCT c.* FROM categories c 
+                        INNER JOIN products p ON c.id = p.category_id");
 $categories = $catStmt->fetchAll();
 
 $limit = 8;
@@ -81,58 +83,55 @@ $allProducts = $stmt->fetchAll();
 </div>
 
 <?php foreach ($categories as $category): ?>
+    <?php
+    // جلب منتجات هذه الفئة
+    $pStmt = $pdo->prepare("SELECT p.*, (SELECT COUNT(*) FROM wishlist w WHERE w.product_id = p.id AND w.user_id = ?) as is_wishlisted FROM products p WHERE category_id = ? LIMIT 10");
+    $pStmt->execute([$userId, $category['id']]);
+    $catProducts = $pStmt->fetchAll();
+
+    // تأكيد إضافي: إذا كانت الفئة فارغة (رغم استعلام SQL أعلاه) لا تظهر القسم
+    if (empty($catProducts)) continue;
+    ?>
+
     <div class="category-section mb-5">
         <h3 class="fw-bold mb-3"><?php echo htmlspecialchars($category['name']); ?></h3>
         <div class="cat-wrapper">
             <button class="scroll-btn btn-left"
-                onclick="this.nextElementSibling.scrollBy({left: -300, behavior: 'smooth'})"><i
-                    class="fas fa-chevron-left"></i></button>
+                onclick="this.nextElementSibling.scrollBy({left: -300, behavior: 'smooth'})">
+                <i class="fas fa-chevron-left"></i>
+            </button>
             <div class="cat-scroll-container">
-                <?php
-                $pStmt = $pdo->prepare("SELECT p.*, (SELECT COUNT(*) FROM wishlist w WHERE w.product_id = p.id AND w.user_id = ?) as is_wishlisted FROM products p WHERE category_id = ? LIMIT 10");
-                $pStmt->execute([$userId, $category['id']]);
-                $catProducts = $pStmt->fetchAll();
-
-                if (empty($catProducts)):
-                    echo "<p class='text-muted ps-2'>No products in this category yet.</p>";
-                else:
-                    foreach ($catProducts as $p):
-                ?>
-                        <div class="cat-item">
-                            <div class="card h-100 shadow-sm border-0 rounded-4 overflow-hidden">
-                                <div class="position-relative">
-                                    <img src="uploads/<?php echo $p['image'] ?: 'product-default.png'; ?>" class="card-img-top"
-                                        style="height: 150px; object-fit: cover;">
-                                    <div class="position-absolute top-0 start-0 m-2">
-                                        <i
-                                            class="<?php echo $p['is_wishlisted'] ? 'fas' : 'far'; ?> fa-heart text-danger bg-white p-2 rounded-circle shadow-sm small"></i>
-                                    </div>
-                                </div>
-                                <div class="card-body p-3 text-center">
-                                    <h6 class="text-truncate fw-bold mb-1 small"><?php echo htmlspecialchars($p['name']); ?></h6>
-                                    <p class="text-primary fw-bold mb-2 small">$<?php echo number_format($p['price'], 2); ?></p>
-                                    <a href="product_details.php?id=<?php echo $p['id']; ?>"
-                                        class="btn btn-sm btn-outline-primary w-100 rounded-pill">View</a>
+                <?php foreach ($catProducts as $p): ?>
+                    <div class="cat-item">
+                        <div class="card h-100 shadow-sm border-0 rounded-4 overflow-hidden">
+                            <div class="position-relative">
+                                <img src="uploads/<?php echo $p['image'] ?: 'product-default.png'; ?>" class="card-img-top"
+                                    style="height: 150px; object-fit: cover;">
+                                <div class="position-absolute top-0 start-0 m-2">
+                                    <i
+                                        class="<?php echo $p['is_wishlisted'] ? 'fas' : 'far'; ?> fa-heart text-danger bg-white p-2 rounded-circle shadow-sm small"></i>
                                 </div>
                             </div>
+                            <div class="card-body p-3 text-center">
+                                <h6 class="text-truncate fw-bold mb-1 small"><?php echo htmlspecialchars($p['name']); ?></h6>
+                                <p class="text-primary fw-bold mb-2 small">$<?php echo number_format($p['price'], 2); ?></p>
+                                <a href="product_details.php?id=<?php echo $p['id']; ?>"
+                                    class="btn btn-sm btn-outline-primary w-100 rounded-pill">View</a>
+                            </div>
                         </div>
-                <?php endforeach;
-                endif; ?>
+                    </div>
+                <?php endforeach; ?>
             </div>
             <button class="scroll-btn btn-right"
-                onclick="this.previousElementSibling.scrollBy({left: 300, behavior: 'smooth'})"><i
-                    class="fas fa-chevron-right"></i></button>
+                onclick="this.previousElementSibling.scrollBy({left: 300, behavior: 'smooth'})">
+                <i class="fas fa-chevron-right"></i>
+            </button>
         </div>
     </div>
 <?php endforeach; ?>
 
 <hr class="my-5" id="all-products">
-
 <div id="products" class="row">
-    <div class="col-12 mb-4">
-        <h2 class="fw-bold"><i class="fas fa-th-large me-2 text-secondary"></i>All Products</h2>
-    </div>
-
     <?php foreach ($allProducts as $product): ?>
         <div class="col-sm-6 col-md-4 col-lg-3 mb-4">
             <div class="card product-card h-100 shadow-sm border-0 rounded-4 overflow-hidden">
@@ -158,25 +157,5 @@ $allProducts = $stmt->fetchAll();
         </div>
     <?php endforeach; ?>
 </div>
-
-<?php if ($totalPages > 1): ?>
-    <nav class="mt-5">
-        <ul class="pagination justify-content-center">
-            <li class="page-item <?php echo $page <= 1 ? 'disabled' : ''; ?>">
-                <a class="page-link rounded-circle mx-1" href="?page=<?php echo $page - 1; ?>#all-products"><i
-                        class="fas fa-chevron-left"></i></a>
-            </li>
-            <?php for ($i = 1; $i <= $totalPages; $i++): ?>
-                <li class="page-item <?php echo $page == $i ? 'active' : ''; ?>">
-                    <a class="page-link rounded-circle mx-1" href="?page=<?php echo $i; ?>#all-products"><?php echo $i; ?></a>
-                </li>
-            <?php endfor; ?>
-            <li class="page-item <?php echo $page >= $totalPages ? 'disabled' : ''; ?>">
-                <a class="page-link rounded-circle mx-1" href="?page=<?php echo $page + 1; ?>#all-products"><i
-                        class="fas fa-chevron-right"></i></a>
-            </li>
-        </ul>
-    </nav>
-<?php endif; ?>
 
 <?php include 'includes/footer.php'; ?>
