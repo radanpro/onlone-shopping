@@ -9,6 +9,14 @@ if (!isset($_GET['id'])) {
 
 $id = $_GET['id'];
 try {
+    $isWishlisted = false;
+    if (isLoggedIn()) {
+        $wishStmt = $pdo->prepare("SELECT id FROM wishlist WHERE user_id = ? AND product_id = ?");
+        $wishStmt->execute([$_SESSION['user_id'], $id]);
+        if ($wishStmt->fetch()) {
+            $isWishlisted = true;
+        }
+    }
     $stmt = $pdo->prepare("SELECT * FROM products WHERE id = ?");
     $stmt->execute([$id]);
     $product = $stmt->fetch();
@@ -74,9 +82,9 @@ if (!$product) {
                     data-product-id="<?php echo $product['id']; ?>">
                     <i class="fas fa-cart-plus me-2"></i>Add to Cart
                 </button>
-                <button class="btn btn-outline-danger btn-lg rounded-pill" type="button" id="add-to-wishlist-btn"
-                    data-product-id="<?php echo $product['id']; ?>">
-                    <i class="far fa-heart"></i>
+                <button class="btn <?php echo $isWishlisted ? 'btn-danger' : 'btn-outline-danger'; ?> btn-lg rounded-pill"
+                    type="button" id="add-to-wishlist-btn" data-product-id="<?php echo $product['id']; ?>">
+                    <i class="<?php echo $isWishlisted ? 'fas' : 'far'; ?> fa-heart"></i>
                 </button>
             <?php else: ?>
                 <a href="login.php" class="btn btn-primary btn-lg px-5 rounded-pill shadow-sm">

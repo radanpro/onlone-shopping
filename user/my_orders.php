@@ -21,7 +21,7 @@ $stmt = $pdo->prepare("
     ORDER BY o.created_at DESC
 ");
 $stmt->execute([$userId]);
-$results = $stmt->fetchAll(PDO::FETCH_GROUP); // تجميع العناصر حسب رقم الطلب
+$results = $stmt->fetchAll(PDO::FETCH_GROUP);
 ?>
 
 <h2 class="fw-bold mb-4"><i class="fas fa-box me-2 text-primary"></i>My Orders & Cart</h2>
