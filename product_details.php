@@ -130,7 +130,7 @@ if (!$product) {
                         showAlert(data.message, data.status);
                     })
                     .catch(error => {
-                        showAlert('An error occurred. Please try again.', 'danger');
+                        showAlert(`An error occurred. Please try again. ${error}`, 'danger');
                     });
             });
         }

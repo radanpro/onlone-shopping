@@ -80,6 +80,9 @@ try {
     ");
     $stmt->execute([$orderId]);
 
+    $updateStockStmt = $pdo->prepare("UPDATE products SET stock = stock - ? WHERE id = ?");
+    $updateStockStmt->execute([$quantity, $productId]);
+
 
     echo json_encode(['status' => 'success', 'message' => 'Product added to cart successfully!']);
 } catch (Exception $e) {
